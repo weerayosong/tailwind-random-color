@@ -27,6 +27,15 @@
                 -ms-overflow-style: none;
                 scrollbar-width: none;
             }
+
+            /* --- เพิ่มโค้ดชุดนี้เพื่อfix iOS --- */
+            * {
+                -webkit-touch-callout: none; /* ปิดเมนูเด้งตอนกดค้าง */
+                -webkit-tap-highlight-color: transparent; /* ปิดแถบสีเทาตอนแตะ */
+            }
+            body {
+                touch-action: none; /* บังคับไม่ให้ Safari พยายามซูมหรือเลื่อนจอ */
+            }
         </style>
     </head>
     <body

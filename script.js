@@ -299,11 +299,24 @@ container.addEventListener("pointerup", (e) => {
 
 container.addEventListener("pointercancel", () => (isDragging = false));
 
-// เพิ่มฟีเจอร์: แตะที่กรอบคลาสเพื่อ Copy ได้โดยตรง (แก้บั๊กคนปัดไม่ถนัด)
-classDisplay.parentElement.classList.remove("pointer-events-none"); // ปลดล็อกให้กดกรอบข้อความได้
-classDisplay.parentElement.addEventListener("pointerdown", (e) => {
-    e.stopPropagation(); // ไม่ให้ไปทริกเกอร์การปัดสีพื้นหลัง
-    copyToClipboard();
+// --- แก้ไขการคลิกเพื่อ Copy สำหรับ iOS ---
+const copyArea = classDisplay.parentElement;
+copyArea.classList.remove("pointer-events-none"); // ปลดล็อกให้กดได้
+copyArea.style.cursor = "pointer"; // เปลี่ยนเมาส์เป็นรูปมือ
+
+// ใช้ 'click' แทน pointer events เพราะ iOS Safari ยอมรับ click ในการอนุญาต Copy มากกว่า
+copyArea.addEventListener("click", (e) => {
+    e.stopPropagation(); // กันไม่ให้ไปกวน Event อื่น
+
+    // สำหรับ iOS การคัดลอกแบบ Fallback มักจะชัวร์สุดเมื่อไม่ได้รันบน https
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard
+            .writeText(currentClassStr)
+            .then(() => showToast())
+            .catch(() => fallbackCopyTextToClipboard(currentClassStr));
+    } else {
+        fallbackCopyTextToClipboard(currentClassStr);
+    }
 });
 
 // Init App
