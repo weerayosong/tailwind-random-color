@@ -212,18 +212,54 @@ let startY = 0;
 let isDragging = false;
 let scrollTimeout = null;
 
+// ฟังก์ชันแยกสำหรับแสดง Toast ให้เรียกใช้ง่ายๆ
+function showToast() {
+    toast.classList.remove("opacity-0", "translate-y-4");
+    toast.classList.add("opacity-100", "translate-y-0");
+    setTimeout(() => {
+        toast.classList.remove("opacity-100", "translate-y-0");
+        toast.classList.add("opacity-0", "translate-y-4");
+    }, 1500);
+}
+
+// แผนสำรองสำหรับการ Copy (ช่วยแก้ปัญหาตอนเทสต์ผ่าน HTTP หรือมือถือบล็อก)
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; // ซ่อนไว้ไม่ให้หน้าจอกระตุก
+    textArea.style.top = "-9999px";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand("copy");
+        if (successful) showToast();
+    } catch (err) {
+        console.error("Fallback copy failed", err);
+    }
+
+    document.body.removeChild(textArea);
+}
+
 async function copyToClipboard() {
     if (!currentClassStr) return;
+
     try {
-        await navigator.clipboard.writeText(currentClassStr);
-        toast.classList.remove("opacity-0", "translate-y-4");
-        toast.classList.add("opacity-100", "translate-y-0");
-        setTimeout(() => {
-            toast.classList.remove("opacity-100", "translate-y-0");
-            toast.classList.add("opacity-0", "translate-y-4");
-        }, 1500);
+        // ลองใช้วิธีสมัยใหม่ก่อน (ต้องการ HTTPS หรือ Localhost)
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(currentClassStr);
+            showToast();
+        } else {
+            // ถ้าไม่ใช่ HTTPS ให้ใช้แผนสำรอง
+            fallbackCopyTextToClipboard(currentClassStr);
+        }
     } catch (err) {
-        console.error("Failed to copy", err);
+        // ถ้าวิธีใหม่พัง (เช่น บราวเซอร์มองว่าไม่ได้เกิดจากการคลิก) ให้สลับไปแผนสำรอง
+        console.warn("Clipboard API failed, using fallback...", err);
+        fallbackCopyTextToClipboard(currentClassStr);
     }
 }
 
@@ -262,6 +298,13 @@ container.addEventListener("pointerup", (e) => {
 });
 
 container.addEventListener("pointercancel", () => (isDragging = false));
+
+// เพิ่มฟีเจอร์: แตะที่กรอบคลาสเพื่อ Copy ได้โดยตรง (แก้บั๊กคนปัดไม่ถนัด)
+classDisplay.parentElement.classList.remove("pointer-events-none"); // ปลดล็อกให้กดกรอบข้อความได้
+classDisplay.parentElement.addEventListener("pointerdown", (e) => {
+    e.stopPropagation(); // ไม่ให้ไปทริกเกอร์การปัดสีพื้นหลัง
+    copyToClipboard();
+});
 
 // Init App
 updatePoolCount();
