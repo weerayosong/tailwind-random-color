@@ -1,9 +1,11 @@
-# Tailwind Random Color
+# Tailwind CSS Random Color
 
 [Live Preview](https://tailwind-random-color.vercel.app/)
 
 เว็บแอปพลิเคชันสำหรับสุ่มดูสีและคัดลอกคลาสของ Tailwind CSS (v4) สร้างขึ้นมาเพื่อเป็นเครื่องมือช่วยนักพัฒนาในการหาสีและ Gradient ที่ใช่ได้อย่างรวดเร็ว  
 **_(ที่จริงแล้วผมแค่ขี้เกียจและนึกไม่ออกว่าจะใช้สีอะไรดี)_**
+
+![alt text](https://github.com/weerayosong/weerayosong.github.io/blob/main/images/mini9.png?raw=true)
 
 ## ฟีเจอร์หลัก (Features)
 

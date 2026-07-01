@@ -85,7 +85,7 @@ function getGradientClass(colorObj) {
     let toShade = colorObj.shade < 500 ? colorObj.shade + 400 : 950;
     if (colorObj.shade >= 800) toShade = colorObj.shade - 500;
     const toClass = `to-${colorObj.name}-${toShade}`;
-    return `bg-gradient-${dir} ${fromClass} ${toClass}`;
+    return `bg-linear-${dir} ${fromClass} ${toClass}`;
 }
 
 function getMixGradientClass(colorObj) {
@@ -94,7 +94,7 @@ function getMixGradientClass(colorObj) {
     const randomIndex2 = Math.floor(Math.random() * filteredColors.length);
     const colorObj2 = filteredColors[randomIndex2];
     const toClass = `to-${colorObj2.name}-${colorObj2.shade}`;
-    return `bg-gradient-${dir} ${fromClass} ${toClass}`;
+    return `bg-linear-${dir} ${fromClass} ${toClass}`;
 }
 
 function setRandomColor() {
